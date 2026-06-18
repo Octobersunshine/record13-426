@@ -1,4 +1,30 @@
+### 解析单个证书信息（含到期剩余天数）
+
 POST http://localhost:8080/parse-cert
+Content-Type: application/json
+
+{
+    "certPath": "e:\\temp\\record13\\426\\test.cer"
+}
+
+### 校验证书链完整性（服务端证书 + 中间证书 + root 证书）
+
+POST http://localhost:8080/verify-cert-chain
+Content-Type: application/json
+
+{
+    "certPath": "e:\\temp\\record13\\426\\server.pem",
+    "intermediateCertPaths": [
+        "e:\\temp\\record13\\426\\intermediate.pem"
+    ],
+    "rootCertPaths": [
+        "e:\\temp\\record13\\426\\root.pem"
+    ]
+}
+
+### 仅校验自签名根证书（不提供中间和 root 证书）
+
+POST http://localhost:8080/verify-cert-chain
 Content-Type: application/json
 
 {
