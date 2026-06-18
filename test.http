@@ -1,0 +1,6 @@
+POST http://localhost:8080/parse-cert
+Content-Type: application/json
+
+{
+    "certPath": "e:\\temp\\record13\\426\\test.cer"
+}
