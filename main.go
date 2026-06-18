@@ -57,6 +57,18 @@ func parseCertHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(certInfo)
 }
 
+func isEncryptedPEM(block *pem.Block) bool {
+	if procType, ok := block.Headers["Proc-Type"]; ok {
+		if len(procType) >= 9 && procType[:9] == "4,ENCRYPTED" {
+			return true
+		}
+	}
+	if len(block.Type) >= 9 && block.Type[:9] == "ENCRYPTED" {
+		return true
+	}
+	return false
+}
+
 func parseCertificate(certPath string) (*CertInfo, error) {
 	certData, err := os.ReadFile(certPath)
 	if err != nil {
@@ -66,6 +78,9 @@ func parseCertificate(certPath string) (*CertInfo, error) {
 	var cert *x509.Certificate
 	block, _ := pem.Decode(certData)
 	if block != nil {
+		if isEncryptedPEM(block) {
+			return nil, fmt.Errorf("encrypted PEM certificate is not supported, please decrypt first")
+		}
 		cert, err = x509.ParseCertificate(block.Bytes)
 		if err != nil {
 			return nil, fmt.Errorf("parse PEM certificate: %w", err)
